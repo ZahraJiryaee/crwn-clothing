@@ -1,7 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 const config = {
   apiKey: "AIzaSyCdQ63XodLQwkOSBneFFGah-DTbpm-MfdI",
@@ -12,6 +11,8 @@ const config = {
   appId: "1:753836430654:web:f766d727cc59af11e6086f",
   measurementId: "G-G9Z8T4J3B6",
 };
+
+firebase.initializeApp(config);
 
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
@@ -40,21 +41,13 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   return userRef;
 };
 
-firebase.initializeApp(config);
-
-// export const auth = firebase.auth();
-export const auth = getAuth();
+export const auth = firebase.auth();
 export const firestore = firebase.firestore();
 
-// const provider = new firebase.auth.GoogleAuthProvider();
-const provider = new GoogleAuthProvider();
+const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({
   prompt: "select_account",
-}); /* this triggers the google pop up */
-
-// export const signInWithGoogle = () => auth.signInWithPopup(provider);
-export const signInWithGoogle = async () => {
-  return await signInWithPopup(auth, provider);
-};
+});
+export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
 export default firebase;
