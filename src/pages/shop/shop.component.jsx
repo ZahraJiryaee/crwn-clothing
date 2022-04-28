@@ -1,38 +1,30 @@
 import React, { Component } from "react";
 import { Route } from "react-router-dom";
+import { createStructuredSelector } from "reselect";
 import { connect } from "react-redux";
+
+import { fetchCollectionsStartAsync } from "../../redux/shop/shop.actions";
+import { selectIsCollectionFetching } from "../../redux/shop/shop.selector";
 
 import CollectionsOverview from "../../components/collections-overview/collections-overview.component";
 import CollectionPage from "../collection/collection.component";
 import WithSpinner from "../../components/with-spinner/with-spinner.component";
 
-import {
-  firestore,
-  convertCollectionsSnapshopToMap,
-} from "../../firebase/firebase.utils";
-
-import { updateCollections } from "../../redux/shop/shop.actions";
-
 const CollectionsOverviewWithSpinner = WithSpinner(CollectionsOverview);
 const CollectionPageWithSpinner = WithSpinner(CollectionPage);
 
 class ShopPage extends Component {
-  state = {
-    loading: true,
-  };
-
-  unsubscribeFromSnapshop = null;
-
   componentDidMount() {
-    const { updateCollections } = this.props;
-    const collectionRef = firestore.collection("collections");
+    /* get data from redux */
+    const { fetchCollectionsStartAsync } = this.props;
+    fetchCollectionsStartAsync();
 
-    /* Promise Pattern */
+    /* Promise Pattern 
     collectionRef.get().then((snapshopt) => {
       const collectionsMap = convertCollectionsSnapshopToMap(snapshopt);
       updateCollections(collectionsMap);
       this.setState({ loading: false });
-    });
+    });*/
     /* Observable Pattern 
     collectionRef.onSnapshot(async (snapshopt) => {
       const collectionsMap = convertCollectionsSnapshopToMap(snapshopt);
@@ -49,21 +41,26 @@ class ShopPage extends Component {
   }
 
   render() {
-    const { match } = this.props;
-    const { loading } = this.state;
+    const { match, isCollectionFetching } = this.props;
     return (
       <div className="shop-page">
         <Route
           exact
           path={`${match.path}`}
           render={(props) => (
-            <CollectionsOverviewWithSpinner isLoading={loading} {...props} />
+            <CollectionsOverviewWithSpinner
+              isLoading={isCollectionFetching}
+              {...props}
+            />
           )}
         />
         <Route
           path={`${match.path}/:collectionId`}
           render={(props) => (
-            <CollectionPageWithSpinner isLoading={loading} {...props} />
+            <CollectionPageWithSpinner
+              isLoading={isCollectionFetching}
+              {...props}
+            />
           )}
         />
       </div>
@@ -71,12 +68,14 @@ class ShopPage extends Component {
   }
 }
 
+const mapStateToProps = createStructuredSelector({
+  isCollectionFetching: selectIsCollectionFetching,
+});
 const mapDispatchToProps = (dispatch) => ({
-  updateCollections: (colllectionsMap) =>
-    dispatch(updateCollections(colllectionsMap)),
+  fetchCollectionsStartAsync: () => dispatch(fetchCollectionsStartAsync()),
 });
 
-export default connect(null, mapDispatchToProps)(ShopPage);
+export default connect(mapStateToProps, mapDispatchToProps)(ShopPage);
 
 /*
 bc in App.js Shop in nested in a Route, 
