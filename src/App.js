@@ -22,27 +22,22 @@ class App extends React.Component {
 
   componentDidMount() {
     const { setCurrentUser } = this.props;
-    // store the state of user in App
-    // know if the user has signin or out without manually fetch
-    // oAuth allows users to signin with any other 3rd party service that they might have (google, facebook, github)
-    // this is open subscribtion (open messaging system between our app and firebase)
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-      if (userAuth) {
-        // to check if database has updated at that reference with any new data
-        const userRef = await createUserProfileDocument(userAuth);
-        // onSnapshot represents the data stored on database
-        userRef.onSnapshot((snapshot) => {
-          setCurrentUser({
-            id: snapshot.id,
-            ...snapshot.data(),
-          });
-        });
-      } else {
-        setCurrentUser(userAuth);
-      }
 
-      console.log("currentUser::", userAuth);
-    });
+    // this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+    //   if (userAuth) {
+    //     const userRef = await createUserProfileDocument(userAuth);
+    //     userRef.onSnapshot((snapshot) => {
+    //       setCurrentUser({
+    //         id: snapshot.id,
+    //         ...snapshot.data(),
+    //       });
+    //     });
+    //   } else {
+    //     setCurrentUser(userAuth);
+    //   }
+
+    //   console.log("currentUser::", userAuth);
+    // });
   }
 
   componentWillUnmount() {
