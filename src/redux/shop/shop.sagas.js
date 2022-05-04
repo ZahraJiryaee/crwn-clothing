@@ -1,6 +1,6 @@
-import { takeEvery, call, put } from "redux-saga/effects";
-/* listens for every action of a specific type that we pass.
- takeEvery creates a non blocking call in order to not stop the app 
+import { takeLatest, call, put } from "redux-saga/effects";
+/* takeEvery listens for every action of a specific type that we pass.
+ takeEvery creates a non blocking(concurrent) call in order to not stop the app 
  to continue running either other sagas or whatever the user wants to do */
 /* call is the effect inside the generator function that invokes the method */
 /* inside of a generator function, sagas do not dispatch actions using dispatch keyword.
@@ -23,11 +23,16 @@ export function* fetchCollectionsStart() {
   /*
     takeEvery:
     first Arg: the action type that we want
-    second Arg: a generator function that we'll run in response to the listener (first Arg)
+    second Arg: a generator function that we'll run in response to the listener (first Arg) 
     */
+  /*
+    takeEvery: kicks of a new task for every action that comes in
+    take: runs through the same saga (just once)
+    takeLatest: when we only want the last one to get resolved, it will cancel all the previous ones.
+   */
   /* The whole purpose of saga middle ware is to run sagas concurrently - to run them all
    together in a way that does not block the execution */
-  yield takeEvery(
+  yield takeLatest(
     ShopActionTypes.FETCH_COLLECTIONS_START,
     fetchCollectionsAsync
   );
