@@ -1,4 +1,4 @@
-import { takeLatest, call, put } from "redux-saga/effects";
+import { takeLatest, all, call, put } from "redux-saga/effects";
 /* takeEvery listens for every action of a specific type that we pass.
  takeEvery creates a non blocking(concurrent) call in order to not stop the app 
  to continue running either other sagas or whatever the user wants to do */
@@ -58,4 +58,8 @@ export function* fetchCollectionsAsync() {
   } catch (error) {
     yield put(fetchCollectionsFailure(error.message));
   }
+}
+
+export function* shopSagas() {
+  yield all([call(fetchCollectionsStart)]);
 }
